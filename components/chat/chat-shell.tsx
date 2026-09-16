@@ -580,17 +580,7 @@ function ChatShellContent({ initialConversations }: ChatShellProps) {
           </div>
         )}
 
-        {/* Modal Obbligatorio di Onboarding se il modello Free non è installato */}
-        {modelStatusMap !== undefined && !modelStatusMap.free && (
-          <MandatoryModelInstaller
-            onInstalled={() => {
-              setModelStatusMap((prev) =>
-                prev ? { ...prev, free: true } : { free: true, pro: false, ultra: false }
-              );
-              setTier("free");
-            }}
-          />
-        )}
+
 
         <SystemLogsViewer open={isLogsOpen} onClose={() => setIsLogsOpen(false)} />
 

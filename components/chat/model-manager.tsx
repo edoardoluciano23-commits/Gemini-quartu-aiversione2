@@ -352,12 +352,12 @@ export function ModelManager({ open: controlledOpen, onOpenChange, onStatusChang
                     {data?.engine === "local-integrated"
                       ? "Motore Quartu AI Locale (Attivo)"
                       : isConnected
-                      ? `Server Esterno (${data?.version || "attivo"})`
+                      ? `Bridge Locale (${data?.version || "attivo"})`
                       : "Motore Quartu AI Locale (Attivo)"}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  I modelli girano al 100% in locale senza alcuna connessione cloud o server esterno obbligatorio.
+                  I modelli girano al 100% in locale sul tuo dispositivo senza alcuna connessione cloud.
                 </p>
               </div>
 
@@ -367,7 +367,7 @@ export function ModelManager({ open: controlledOpen, onOpenChange, onStatusChang
                   size="icon"
                   className="h-11 w-11 min-h-[44px] min-w-[44px] md:h-8 md:w-8 rounded-full"
                   onClick={() => setShowConfig((v) => !v)}
-                  title="Configura Server Esterno (Opzionale)"
+                  title="Configura Host Locale (Opzionale)"
                 >
                   <Settings2 className="h-5 w-5 md:h-4 md:w-4" />
                 </Button>
@@ -400,7 +400,7 @@ export function ModelManager({ open: controlledOpen, onOpenChange, onStatusChang
               <div className="glass-subtle rounded-2xl p-3 border border-border/60 flex flex-col gap-2 animate-in slide-in-from-top-2 duration-150">
                 <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
                   <Server className="h-3.5 w-3.5 text-sky-500" />
-                  <span>Connessione Server Esterno LM Studio / LM Studio (Opzionale)</span>
+                  <span>Connessione Host Locale LM Studio / Ollama (Opzionale)</span>
                 </div>
                 <div className="flex gap-2">
                   <Input

@@ -293,10 +293,10 @@ export function MandatoryModelInstaller({ onInstalled }: MandatoryModelInstaller
             <div className="flex items-start gap-2.5">
               <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="font-semibold text-foreground">Connessione server esterno non attiva</p>
+                <p className="font-semibold text-foreground">Bridge Locale non attivo</p>
                 <p className="mt-0.5 text-[11px] opacity-90">{error}</p>
                 <p className="mt-1 text-[10px] text-muted-foreground">
-                  Nessun problema: il motore locale integrato di Quartu AI è sempre pronto all&apos;uso senza dipendenze o comandi da terminale.
+                  Il motore locale WebGPU integrato in Quartu AI è sempre pronto all&apos;uso nel browser senza dipendenze esterne.
                 </p>
               </div>
             </div>
@@ -308,7 +308,7 @@ export function MandatoryModelInstaller({ onInstalled }: MandatoryModelInstaller
                 onClick={() => void startPull()}
               >
                 <RefreshCw className="h-3.5 w-3.5" />
-                Riprova Server
+                Riconnetti Bridge Locale
               </Button>
               <Button
                 size="sm"
