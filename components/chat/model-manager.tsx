@@ -420,12 +420,12 @@ export function ModelManager({ open: controlledOpen, onOpenChange, onStatusChang
             )}
 
             {error && (
-              <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 p-3 text-xs text-sky-800 dark:text-sky-300 flex items-start gap-2.5">
-                <Sparkles className="h-4 w-4 shrink-0 mt-0.5 text-sky-500" />
+              <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-300 flex items-start gap-2.5">
+                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-amber-500" />
                 <div className="flex-1">
-                  <p className="font-semibold text-foreground">Motore Locale Quartu AI Attivo</p>
+                  <p className="font-semibold text-foreground">Server locale non raggiungibile</p>
                   <p className="mt-0.5 text-[11px] opacity-90">
-                    Server esterno non connesso: Quartu AI sta operando con il motore neurale locale integrato ad alte prestazioni. Puoi chattare liberamente al 100% in locale.
+                    Ollama o LM Studio non sembrano in esecuzione. Avvia il server locale sulla porta :1234 (LM Studio) o :11434 (Ollama) e ricarica lo stato.
                   </p>
                 </div>
               </div>
@@ -605,9 +605,9 @@ export function ModelManager({ open: controlledOpen, onOpenChange, onStatusChang
             </div>
 
             <div className="border-t border-border/50 pt-3 text-[11px] text-muted-foreground flex flex-wrap items-center justify-between gap-2">
-              <span>Free: <strong>Qwen 2.5 0.5B</strong> (~390 MB)</span>
-              <span>Pro: <strong>Qwen 2.5 1.5B</strong> (~980 MB)</span>
-              <span>Ultra: <strong>Qwen 2.5 3B</strong> (~1.9 GB)</span>
+              <span>Free: <strong>IBM Granite 4.0 H</strong> (~360 MB)</span>
+              <span>Pro: <strong>Ternary Bonsai 1.7B</strong> (~3.4 GB)</span>
+              <span>Ultra: <strong>Qwen 2.5 3B</strong> (~2.5 GB)</span>
             </div>
           </div>
         </div>

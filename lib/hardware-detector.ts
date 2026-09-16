@@ -28,24 +28,31 @@ export async function detectHardware(): Promise<HardwareCapabilities> {
     }
   }
 
-  // 2. Rilevamento LM Studio Locale (ping asincrono al server su 127.0.0.1)
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1500); // 1.5s timeout
+  // 2. Rilevamento server AI locale (LM Studio su :1234 o Ollama su :11434)
+  const localEndpoints = [
+    "http://127.0.0.1:1234/v1/models",
+    "http://127.0.0.1:11434/v1/models",
+  ];
 
-    const res = await fetch("http://127.0.0.1:1234/v1/models", {
-      method: "GET",
-      signal: controller.signal,
-    });
-    
-    clearTimeout(timeoutId);
+  for (const endpoint of localEndpoints) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500); // 1.5s timeout
 
-    if (res.ok) {
-      capabilities.lmstudioLocalAvailable = true;
+      const res = await fetch(endpoint, {
+        method: "GET",
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        capabilities.lmstudioLocalAvailable = true;
+        break; // found one working, no need to check further
+      }
+    } catch {
+      // Expected to fail if server is off or CORS is blocked
     }
-  } catch (e) {
-    // Expected to fail if LM Studio is off or CORS is blocked
-    console.debug("LM Studio local not available directly via browser:", e);
   }
 
   return capabilities;

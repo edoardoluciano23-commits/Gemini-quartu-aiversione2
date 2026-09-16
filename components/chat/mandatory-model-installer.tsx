@@ -29,7 +29,7 @@ export function MandatoryModelInstaller({ onInstalled }: MandatoryModelInstaller
   }>({
     percent: 0,
     status: "Inizializzazione download...",
-    detail: "Preparazione pacchetto Qwen 2.5 (0.5B)",
+    detail: "Preparazione pacchetto IBM Granite 4.0 H (350M)",
   });
   const [error, setError] = useState<string | null>(null);
   const [completed, setCompleted] = useState(false);
@@ -245,7 +245,7 @@ export function MandatoryModelInstaller({ onInstalled }: MandatoryModelInstaller
           </div>
           <div className="flex flex-col items-center gap-1 border-x border-border/40">
             <HardDrive className="h-4 w-4 text-teal-500" />
-            <span className="font-semibold text-foreground">~390 MB</span>
+            <span className="font-semibold text-foreground">~360 MB</span>
             <span className="text-[10px] text-muted-foreground font-mono">Download unico</span>
           </div>
           <div className="flex flex-col items-center gap-1">
@@ -283,7 +283,7 @@ export function MandatoryModelInstaller({ onInstalled }: MandatoryModelInstaller
 
           <div className="flex items-center justify-between text-[11px] text-muted-foreground">
             <span>{progress.detail || "Scaricamento dei layer..."}</span>
-            <span>Tag: <code className="font-mono text-[10px]">qwen2.5:0.5b</code></span>
+            <span>Tag: <code className="font-mono text-[10px]">granite4:350m-h</code></span>
           </div>
         </div>
 

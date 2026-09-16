@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Menu, RefreshCw, AlertTriangle, ShieldCheck, Activity, HardDrive } from "lucide-react";
+import { Menu, RefreshCw, AlertTriangle, Activity, HardDrive } from "lucide-react";
 import { ChatSidebar } from "@/components/chat/chat-sidebar";
 import { MessageComposer } from "@/components/chat/message-composer";
 import { MessageList } from "@/components/chat/message-list";
@@ -19,8 +19,8 @@ import { webLlmEngine } from "@/lib/web-llm-engine";
 import { detectHardware } from "@/lib/hardware-detector";
 import { syncConversation, syncMessage, deleteConversationFromFirestore } from "@/lib/firestore-sync";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_TIER, type ModelTier, type ModelItem } from "@/lib/models";
-import { createSseParser, parseDeltaContent, SSE_DONE } from "@/lib/sse";
+import { DEFAULT_TIER, type ModelTier } from "@/lib/models";
+import type { ModelItem } from "@/components/chat/model-manager";
 import { SUGGESTIONS } from "@/lib/suggestions";
 import type { ChatRole, ConversationDto, UiMessage } from "@/lib/types";
 
@@ -254,9 +254,9 @@ function ChatShellContent({ initialConversations }: ChatShellProps) {
           appendDelta(chunk);
         }
       } else {
-        // Direct LM Studio / Ollama fetch
-        let ollamaModel = "qwen2.5:0.5b";
-        if (tier === "pro") ollamaModel = "qwen2.5:1.5b";
+        // Direct LM Studio / Ollama fetch — model tags must match lib/llm.ts config
+        let ollamaModel = "granite4:350m-h";
+        if (tier === "pro") ollamaModel = "MichelRosselli/ternary-bonsai:1.7b-f16";
         if (tier === "ultra") ollamaModel = "qwen2.5:3b";
         
         const systemPrompt = SYSTEM_PROMPT;
