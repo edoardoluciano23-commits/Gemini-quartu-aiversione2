@@ -2,7 +2,7 @@ import { llmConfig, resolveModel } from "@/lib/llm";
 import { ensureOllamaRunning } from "@/lib/ollama-server";
 import { jsonError, readJsonBody } from "@/lib/utils";
 import { modelTierSchema } from "@/lib/schemas";
-import { createDownloadNdjsonStream, setModelInstalled } from "@/lib/model-registry";
+import { setModelInstalled } from "@/lib/model-registry";
 import { z } from "zod";
 
 export const runtime = "nodejs";
@@ -31,17 +31,8 @@ export async function POST(req: Request) {
     running = false;
   }
 
-  // Se LM Studio non è raggiungibile o è configurato con placeholder, usa il download locale integrato
   if (!running || lmstudioHost.includes("<tuo-subdomain>")) {
-    const stream = createDownloadNdjsonStream(tier, req.signal);
-    return new Response(stream, {
-      headers: {
-        "Content-Type": "application/x-ndjson",
-        "Cache-Control": "no-cache, no-transform",
-        Connection: "keep-alive",
-        "X-Accel-Buffering": "no",
-      },
-    });
+    return jsonError(503, "Ollama / LM Studio non è in esecuzione o non è raggiungibile.");
   }
 
   try {
@@ -53,16 +44,7 @@ export async function POST(req: Request) {
     });
 
     if (!res.ok || !res.body) {
-      // Fallback a download locale integrato se LM Studio pull fallisce
-      const stream = createDownloadNdjsonStream(tier, req.signal);
-      return new Response(stream, {
-        headers: {
-          "Content-Type": "application/x-ndjson",
-          "Cache-Control": "no-cache, no-transform",
-          Connection: "keep-alive",
-          "X-Accel-Buffering": "no",
-        },
-      });
+      return jsonError(res.status, "Impossibile scaricare il modello tramite il demone locale.");
     }
 
     setModelInstalled(tier, true);
@@ -76,16 +58,7 @@ export async function POST(req: Request) {
       },
     });
   } catch {
-    // Fallback sicuro
-    const stream = createDownloadNdjsonStream(tier, req.signal);
-    return new Response(stream, {
-      headers: {
-        "Content-Type": "application/x-ndjson",
-        "Cache-Control": "no-cache, no-transform",
-        Connection: "keep-alive",
-        "X-Accel-Buffering": "no",
-      },
-    });
+    return jsonError(500, "Errore interno durante il download del modello.");
   }
 }
 

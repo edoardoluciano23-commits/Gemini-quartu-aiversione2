@@ -5,7 +5,7 @@ import { Cpu, Server, Zap, ChevronDown, Check } from "lucide-react";
 import { detectHardware, HardwareCapabilities } from "@/lib/hardware-detector";
 import { Button } from "@/components/ui/button";
 
-export type EngineMode = "auto" | "webgpu" | "lmstudio" | "quartu";
+export type EngineMode = "auto" | "webgpu" | "lmstudio";
 
 interface EngineIndicatorProps {
   mode: EngineMode;
@@ -28,8 +28,7 @@ export function EngineIndicator({ mode, onModeChange }: EngineIndicatorProps) {
   let activeEngine = mode;
   if (mode === "auto") {
     if (hardware?.webGpuSupported) activeEngine = "webgpu";
-    else if (hardware?.lmstudioLocalAvailable) activeEngine = "lmstudio";
-    else activeEngine = "quartu";
+    else activeEngine = "lmstudio";
   }
 
   const getEngineConfig = (engine: EngineMode) => {
@@ -44,16 +43,9 @@ export function EngineIndicator({ mode, onModeChange }: EngineIndicatorProps) {
       case "lmstudio":
         return {
           icon: <Server className="h-3 w-3 text-sky-500" />,
-          label: "LM Studio",
+          label: "Local AI",
           color: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20",
-          desc: "Local Daemon",
-        };
-      case "quartu":
-        return {
-          icon: <Cpu className="h-3 w-3 text-purple-500" />,
-          label: "Quartu Fallback",
-          color: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
-          desc: "Embedded Engine",
+          desc: "Ollama / LM Studio",
         };
       default:
         return {
@@ -105,7 +97,7 @@ export function EngineIndicator({ mode, onModeChange }: EngineIndicatorProps) {
                 )}
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-foreground/90 font-medium">LM Studio Locale:</span>
+                <span className="text-foreground/90 font-medium">Local AI (Ollama/LM Studio):</span>
                 {hardware?.lmstudioLocalAvailable ? (
                   <span className="text-sky-500 font-semibold inline-flex items-center gap-1">
                     <span className="h-1.5 w-1.5 rounded-full bg-sky-500" />
@@ -121,7 +113,7 @@ export function EngineIndicator({ mode, onModeChange }: EngineIndicatorProps) {
               Selezione Motore
             </div>
             <div className="space-y-1 mt-1">
-              {(["auto", "webgpu", "lmstudio", "quartu"] as EngineMode[]).map((m) => (
+              {(["auto", "webgpu", "lmstudio"] as EngineMode[]).map((m) => (
                 <button
                   key={m}
                   onClick={() => {
@@ -134,7 +126,7 @@ export function EngineIndicator({ mode, onModeChange }: EngineIndicatorProps) {
                       : "text-muted-foreground hover:bg-white/50 dark:hover:bg-zinc-800/40 hover:text-foreground"
                   }`}
                 >
-                  <span className="capitalize">{m === "quartu" ? "Quartu Fallback" : m}</span>
+                  <span className="capitalize">{m === "lmstudio" ? "Local AI" : m}</span>
                   {mode === m && <Check className="h-3.5 w-3.5 text-sky-500" />}
                 </button>
               ))}

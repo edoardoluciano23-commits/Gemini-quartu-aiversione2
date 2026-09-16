@@ -115,7 +115,7 @@ function ChatShellContent({ initialConversations }: ChatShellProps) {
         setTier(savedModel);
       }
       const savedEngine = localStorage.getItem(ENGINE_MODE_STORAGE_KEY);
-      if (savedEngine === "auto" || savedEngine === "webgpu" || savedEngine === "lmstudio" || savedEngine === "quartu") {
+      if (savedEngine === "auto" || savedEngine === "webgpu" || savedEngine === "lmstudio") {
         setEngineMode(savedEngine);
       }
     } catch {
@@ -216,8 +216,7 @@ function ChatShellContent({ initialConversations }: ChatShellProps) {
       let activeEngine = engineMode;
       if (activeEngine === "auto") {
         if (hw.webGpuSupported) activeEngine = "webgpu";
-        else if (hw.lmstudioLocalAvailable) activeEngine = "lmstudio";
-        else activeEngine = "quartu";
+        else activeEngine = "lmstudio";
       }
 
       const appendDelta = (delta: string) => {
@@ -254,7 +253,7 @@ function ChatShellContent({ initialConversations }: ChatShellProps) {
           if (controller.signal.aborted) break;
           appendDelta(chunk);
         }
-      } else if (activeEngine === "lmstudio") {
+      } else {
         // Direct LM Studio / Ollama fetch
         let ollamaModel = "qwen2.5:0.5b";
         if (tier === "pro") ollamaModel = "qwen2.5:1.5b";
@@ -266,41 +265,6 @@ function ChatShellContent({ initialConversations }: ChatShellProps) {
         for await (const chunk of stream) {
           if (controller.signal.aborted) break;
           appendDelta(chunk);
-        }
-      } else {
-        // Server API fallback (Embedded Local Engine)
-        const res = await fetch("/api/chat", {
-          method: "POST",
-          headers: JSON_HEADERS,
-          body: JSON.stringify({ messages: payloadMessages, model: tier }),
-          signal: controller.signal,
-        });
-
-        if (!res.ok) {
-          const errMsg = await readApiError(res, "Errore nella comunicazione con il modello.");
-          throw new Error(errMsg);
-        }
-
-        const body = res.body;
-        if (body === null) throw new Error("Flusso di risposta non disponibile.");
-
-        const reader = body.getReader();
-        const decoder = new TextDecoder();
-        const parser = createSseParser();
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value, { stream: true });
-          const events = parser.feed(chunk);
-
-          for (const dataStr of events) {
-            if (dataStr === SSE_DONE) break;
-            const delta = parseDeltaContent(dataStr);
-            if (!delta || delta.length === 0) continue;
-            appendDelta(delta);
-          }
         }
       }
 
