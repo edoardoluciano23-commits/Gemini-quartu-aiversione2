@@ -1,39 +1,67 @@
 /**
- * Ollama Client Bridge
- * Bypass the server completely and query the user's local Ollama directly from the browser.
+ * Local AI Client Bridge (LM Studio / Ollama)
+ * Direct browser streaming query to local servers on port 1234 or 11434.
  */
+
+export interface ChatMessagePayload {
+  role: string;
+  content: string;
+}
 
 export async function* streamFromLocalOllama(
   model: string,
-  prompt: string,
+  messagesInput: string | ChatMessagePayload[],
   systemPrompt?: string
 ): AsyncGenerator<string, void, unknown> {
-  const url = "http://127.0.0.1:1234/v1/chat/completions";
-  
-  const messages = [];
-  if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
-  messages.push({ role: "user", content: prompt });
+  const endpoints = [
+    "http://127.0.0.1:1234/v1/chat/completions",
+    "http://localhost:1234/v1/chat/completions",
+    "http://127.0.0.1:11434/v1/chat/completions",
+    "http://localhost:11434/v1/chat/completions",
+  ];
+
+  let formattedMessages: ChatMessagePayload[] = [];
+  if (Array.isArray(messagesInput)) {
+    formattedMessages = [...messagesInput];
+    if (systemPrompt && !formattedMessages.some((m) => m.role === "system")) {
+      formattedMessages.unshift({ role: "system", content: systemPrompt });
+    }
+  } else {
+    if (systemPrompt) formattedMessages.push({ role: "system", content: systemPrompt });
+    formattedMessages.push({ role: "user", content: messagesInput });
+  }
 
   const payload = {
     model: model || "local-model",
-    messages: messages,
+    messages: formattedMessages,
     stream: true,
   };
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
+  let response: Response | null = null;
+  let lastError: Error | null = null;
 
-  if (!response.ok) {
-    throw new Error(`LM Studio direct fetch failed: ${response.statusText}`);
+  for (const url of endpoints) {
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok && res.body) {
+        response = res;
+        break;
+      }
+    } catch (err: any) {
+      lastError = err;
+    }
   }
 
-  if (!response.body) {
-    throw new Error("No response body from LM Studio");
+  if (!response || !response.body) {
+    throw new Error(
+      `Impossibile connettersi al server locale (LM Studio su :1234 o Ollama su :11434). Verificare che sia avviato con supporto CORS.`
+    );
   }
 
   const reader = response.body.getReader();
@@ -56,7 +84,7 @@ export async function* streamFromLocalOllama(
             yield content;
           }
         } catch (e) {
-          console.error("Error parsing LM Studio SSE chunk:", e);
+          console.error("Error parsing Local AI SSE chunk:", e);
         }
       }
     }

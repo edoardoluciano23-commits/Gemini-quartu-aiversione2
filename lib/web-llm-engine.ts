@@ -48,15 +48,22 @@ class WebLLMEngineManager {
     this.isInitializing = true;
     try {
       const modelInfo = MODEL_TIERS.find(t => t.id === tier);
-      if (!modelInfo) throw new Error("Tier not found");
-
-      this.engine = new MLCEngine();
-      this.engine.setInitProgressCallback((progress) => {
-        if (onProgress) onProgress(progress);
-      });
+      if (!modelInfo) throw new Error("Tier non trovato");
 
       const modelId = WEB_LLM_MODELS[tier] || "SmolLM2-360M-Instruct-q4f16_1-MLC";
-      await this.engine.reload(modelId);
+
+      if (this.engine) {
+        this.engine.setInitProgressCallback((progress) => {
+          if (onProgress) onProgress(progress);
+        });
+        await this.engine.reload(modelId);
+      } else {
+        this.engine = await CreateMLCEngine(modelId, {
+          initProgressCallback: (progress) => {
+            if (onProgress) onProgress(progress);
+          },
+        });
+      }
       this.currentTier = tier;
     } catch (err: any) {
       this.engine = null;

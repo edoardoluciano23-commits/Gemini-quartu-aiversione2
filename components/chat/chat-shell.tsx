@@ -241,16 +241,14 @@ function ChatShellContent({ initialConversations }: ChatShellProps) {
           appendDelta(chunk);
         }
       } else if (activeEngine === "lmstudio") {
-        // Direct LM Studio fetch
+        // Direct LM Studio / Ollama fetch
         let ollamaModel = "qwen2.5:0.5b";
         if (tier === "pro") ollamaModel = "qwen2.5:1.5b";
         if (tier === "ultra") ollamaModel = "qwen2.5:3b";
         
-        const lastUserMsg = payloadMessages[payloadMessages.length - 1]?.content || "";
-        
         const systemPrompt = SYSTEM_PROMPT;
         
-        const stream = streamFromLocalOllama(ollamaModel, lastUserMsg, systemPrompt);
+        const stream = streamFromLocalOllama(ollamaModel, payloadMessages, systemPrompt);
         for await (const chunk of stream) {
           if (controller.signal.aborted) break;
           appendDelta(chunk);

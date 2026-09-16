@@ -127,5 +127,6 @@ export async function fetchUserConversations(
     });
   } catch (error) {
     handleFirestoreError(error, OperationType.GET, path);
+    return [];
   }
 }
