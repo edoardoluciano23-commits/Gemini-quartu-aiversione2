@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { Send, Square, Sparkles, X, Code2, Zap, HelpCircle } from "lucide-react";
+import { Send, Square, Sparkles, X, Code2, Zap, HelpCircle, Bug, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MAX_MESSAGE_LENGTH } from "@/lib/schemas";
 
@@ -15,6 +15,8 @@ interface MessageComposerProps {
 const QUICK_PROMPTS = [
   { label: "Scrivi Codice", icon: Code2, prompt: "Scrivi un componente React in TypeScript per " },
   { label: "Spiega Concetto", icon: HelpCircle, prompt: "Spiegami in modo chiaro e conciso come funziona " },
+  { label: "Trova Bug", icon: Bug, prompt: "Trova e correggi il bug in questo codice: " },
+  { label: "Refactoring", icon: Wrench, prompt: "Riscrivi e ottimizza questo codice seguendo i criteri di pulizia e performance: " },
   { label: "Ottimizza", icon: Zap, prompt: "Analizza e ottimizza le prestazioni di " },
 ];
 

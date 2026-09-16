@@ -27,6 +27,7 @@ import type { ChatRole, ConversationDto, UiMessage } from "@/lib/types";
 const CONTEXT_WINDOW = 12;
 const JSON_HEADERS = { "content-type": "application/json" } as const;
 const MODEL_STORAGE_KEY = "quartu-ai:model";
+const ENGINE_MODE_STORAGE_KEY = "quartu-ai:engine-mode";
 
 async function readApiError(res: Response, fallback: string): Promise<string> {
   try {
@@ -109,9 +110,13 @@ function ChatShellContent({ initialConversations }: ChatShellProps) {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(MODEL_STORAGE_KEY);
-      if (saved === "free" || saved === "pro" || saved === "ultra") {
-        setTier(saved);
+      const savedModel = localStorage.getItem(MODEL_STORAGE_KEY);
+      if (savedModel === "free" || savedModel === "pro" || savedModel === "ultra") {
+        setTier(savedModel);
+      }
+      const savedEngine = localStorage.getItem(ENGINE_MODE_STORAGE_KEY);
+      if (savedEngine === "auto" || savedEngine === "webgpu" || savedEngine === "lmstudio" || savedEngine === "quartu") {
+        setEngineMode(savedEngine);
       }
     } catch {
       // Storage non disponibile
@@ -122,6 +127,15 @@ function ChatShellContent({ initialConversations }: ChatShellProps) {
     setTier(next);
     try {
       localStorage.setItem(MODEL_STORAGE_KEY, next);
+    } catch {
+      // Storage non disponibile
+    }
+  }
+
+  function changeEngineMode(next: EngineMode): void {
+    setEngineMode(next);
+    try {
+      localStorage.setItem(ENGINE_MODE_STORAGE_KEY, next);
     } catch {
       // Storage non disponibile
     }
@@ -528,7 +542,7 @@ function ChatShellContent({ initialConversations }: ChatShellProps) {
               </Button>
             )}
 
-            <EngineIndicator mode={engineMode} onModeChange={setEngineMode} />
+            <EngineIndicator mode={engineMode} onModeChange={changeEngineMode} />
 
             {/* Pulsante rapido Gestore Modelli con badge installati */}
             <Button
