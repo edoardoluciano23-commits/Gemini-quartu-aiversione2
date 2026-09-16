@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global catch-all default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email']) &&
+             data.uid is string && data.uid.size() <= 128 &&
+             data.email is string && data.email.size() <= 256;
+    }
+
+    function isValidConversation(data) {
+      return data.keys().hasAll(['id', 'userId', 'title', 'createdAt', 'updatedAt']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.userId is string && data.userId.size() <= 128 &&
+             data.title is string && data.title.size() <= 200;
+    }
+
+    function isValidMessage(data) {
+      return data.keys().hasAll(['id', 'conversationId', 'userId', 'role', 'content', 'createdAt']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.conversationId is string && data.conversationId.size() <= 128 &&
+             data.userId is string && data.userId.size() <= 128 &&
+             data.role in ['user', 'assistant', 'system'] &&
+             data.content is string && data.content.size() <= 65536;
+    }
+
+    // User Profile
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidId(userId) && isValidUser(incoming()) && incoming().uid == userId;
+      allow update: if isOwner(userId) && isValidUser(incoming()) && incoming().uid == existing().uid;
+      allow delete: if isOwner(userId);
+
+      // User Conversations
+      match /conversations/{conversationId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(conversationId) && isValidConversation(incoming()) && incoming().userId == userId && incoming().id == conversationId;
+        allow update: if isOwner(userId) && isValidConversation(incoming()) && incoming().userId == existing().userId && incoming().id == existing().id;
+        allow delete: if isOwner(userId);
+
+        // Messages in Conversation
+        match /messages/{messageId} {
+          allow get: if isOwner(userId);
+          allow list: if isOwner(userId);
+          allow create: if isOwner(userId) && isValidId(messageId) && isValidMessage(incoming()) && incoming().userId == userId && incoming().id == messageId && incoming().conversationId == conversationId;
+          allow update: if isOwner(userId) && isValidMessage(incoming()) && incoming().userId == existing().userId && incoming().conversationId == existing().conversationId;
+          allow delete: if isOwner(userId);
+        }
+      }
+    }
+  }
+}

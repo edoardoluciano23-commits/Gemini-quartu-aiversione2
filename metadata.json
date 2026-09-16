@@ -1,0 +1,6 @@
+{
+  "name": "Quartu AI",
+  "description": "Chat AI con interfaccia liquid glass che usa esclusivamente un modello LLM in esecuzione locale",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

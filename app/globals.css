@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --muted: 215 30% 94%;
+    --muted-foreground: 215 16% 47%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11.2%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222 47% 11.2%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --ring: 221 83% 53%;
+    --radius: 1rem;
+  }
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 210 40% 98%;
+    --muted: 217 33% 14%;
+    --muted-foreground: 215 20% 65%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 210 40% 98%;
+    --ring: 224 76% 48%;
+  }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground selection:bg-sky-500/20 selection:text-sky-900 dark:selection:bg-sky-500/30 dark:selection:text-sky-100;
+  }
+}
+
+@layer components {
+  /* Liquid Glass Ultra-Premium Surfaces */
+  .glass-island {
+    @apply relative border border-white/30 bg-white/60 shadow-[0_8px_32px_0_rgba(14,30,60,0.08)] backdrop-blur-2xl backdrop-saturate-150 ring-1 ring-black/[0.04] transition-all dark:border-white/10 dark:bg-zinc-950/60 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.45)] dark:ring-white/[0.05];
+  }
+  .glass-island::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7) 20%, rgba(255, 255, 255, 0.9) 50%, rgba(255, 255, 255, 0.7) 80%, transparent);
+    pointer-events: none;
+  }
+  .dark .glass-island::before {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15) 20%, rgba(255, 255, 255, 0.35) 50%, rgba(255, 255, 255, 0.15) 80%, transparent);
+  }
+
+  .glass {
+    @apply relative border border-white/40 bg-white/70 shadow-[0_8px_24px_-4px_rgba(14,30,60,0.07)] backdrop-blur-2xl backdrop-saturate-150 ring-1 ring-black/[0.03] transition-all dark:border-white/10 dark:bg-zinc-900/65 dark:shadow-[0_8px_28px_-4px_rgba(0,0,0,0.4)] dark:ring-white/[0.05];
+  }
+  .glass-card {
+    @apply relative border border-white/50 bg-white/75 shadow-[0_4px_20px_-2px_rgba(14,30,60,0.06)] backdrop-blur-xl ring-1 ring-black/[0.03] transition-all dark:border-white/[0.09] dark:bg-zinc-900/75 dark:shadow-[0_4px_24px_-2px_rgba(0,0,0,0.35)] dark:ring-white/[0.04];
+  }
+  .glass-subtle {
+    @apply relative border border-white/40 bg-white/50 backdrop-blur-xl shadow-sm transition-all hover:bg-white/75 hover:border-white/60 dark:border-white/[0.08] dark:bg-zinc-800/40 dark:hover:bg-zinc-800/60 dark:hover:border-white/15;
+  }
+  .glass-pill {
+    @apply relative border border-white/40 bg-white/60 shadow-sm backdrop-blur-xl transition-all hover:bg-white/85 active:scale-95 dark:border-white/10 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/80;
+  }
+  .glass-bubble-user {
+    @apply relative border border-white/30 bg-gradient-to-br from-sky-500 via-indigo-600 to-blue-600 text-white shadow-lg shadow-sky-500/25 backdrop-blur-2xl;
+  }
+  .glass-bubble-user::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6) 50%, transparent);
+    pointer-events: none;
+  }
+  .glass-bubble-assistant {
+    @apply relative border border-white/40 bg-white/65 shadow-md shadow-sky-950/[0.04] backdrop-blur-2xl ring-1 ring-black/[0.03] dark:border-white/[0.08] dark:bg-zinc-900/70 dark:shadow-black/30 dark:ring-white/[0.04];
+  }
+  .glass-bubble-assistant::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7) 30%, rgba(255, 255, 255, 0.9) 50%, rgba(255, 255, 255, 0.7) 70%, transparent);
+    pointer-events: none;
+  }
+  .dark .glass-bubble-assistant::before {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15) 30%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.15) 70%, transparent);
+  }
+  .brand-gradient {
+    @apply bg-gradient-to-r from-sky-500 via-indigo-500 to-fuchsia-500 bg-clip-text text-transparent font-extrabold;
+  }
+}
+
+/* Stili del markdown renderizzato */
+.markdown > * + * {
+  margin-top: 0.75rem;
+}
+.markdown h1 {
+  @apply text-xl font-bold tracking-tight mt-3 mb-2;
+}
+.markdown h2 {
+  @apply text-lg font-semibold tracking-tight mt-2.5 mb-1.5;
+}
+.markdown h3 {
+  @apply text-base font-semibold mt-2 mb-1;
+}
+.markdown ul {
+  @apply list-disc pl-5 space-y-1;
+}
+.markdown ol {
+  @apply list-decimal pl-5 space-y-1;
+}
+.markdown li + li {
+  margin-top: 0.25rem;
+}
+.markdown a {
+  @apply text-sky-600 dark:text-sky-400 font-medium underline underline-offset-2 hover:opacity-80;
+}
+.markdown blockquote {
+  @apply border-l-2 border-sky-500/50 bg-sky-500/5 pl-3 py-1 rounded-r-md text-muted-foreground italic;
+}
+.markdown table {
+  @apply w-full border-collapse text-sm my-2 overflow-hidden rounded-lg border border-border;
+}
+.markdown th,
+.markdown td {
+  @apply border border-border/60 px-3 py-1.5 text-left align-top;
+}
+.markdown th {
+  @apply bg-muted/70 font-semibold text-foreground;
+}
+.markdown code:not(pre code) {
+  @apply rounded-md bg-zinc-200/70 dark:bg-zinc-800 px-1.5 py-0.5 text-xs font-mono font-medium text-pink-600 dark:text-pink-400;
+}
+.markdown hr {
+  @apply border-border my-4;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 150, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(150, 150, 150, 0.45);
+}

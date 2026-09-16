@@ -1,0 +1,71 @@
+{
+  "Untitled-1.py": {
+    "filename": "Untitled-1.py",
+    "quality": {
+      "functions": 5,
+      "classes": 0,
+      "comments": 0,
+      "overall_quality": "85%",
+      "lines_of_code": 35
+    },
+    "bugs_found": [
+      {
+        "line": 0,
+        "type": "NameError",
+        "description": "Possible typo: 'arr' similar to 'total'",
+        "severity": "high",
+        "fix": "Replace 'arr' with 'total'"
+      },
+      {
+        "line": 0,
+        "type": "NameError",
+        "description": "Possible typo: 'hello' similar to 'total'",
+        "severity": "high",
+        "fix": "Replace 'hello' with 'total'"
+      },
+      {
+        "line": 0,
+        "type": "NameError",
+        "description": "Possible typo: 'in' similar to '2'",
+        "severity": "high",
+        "fix": "Replace 'in' with '2'"
+      },
+      {
+        "line": 0,
+        "type": "NameError",
+        "description": "Possible typo: 'name' similar to 'total'",
+        "severity": "high",
+        "fix": "Replace 'name' with 'total'"
+      },
+      {
+        "line": 0,
+        "type": "NameError",
+        "description": "Possible typo: 'find_max' similar to 'max_value'",
+        "severity": "high",
+        "fix": "Replace 'find_max' with 'max_value'"
+      },
+      {
+        "line": 0,
+        "type": "NameError",
+        "description": "Possible typo: 'check_even' similar to 'max_value'",
+        "severity": "high",
+        "fix": "Replace 'check_even' with 'max_value'"
+      },
+      {
+        "line": 0,
+        "type": "NameError",
+        "description": "Possible typo: 'num' similar to 'total'",
+        "severity": "high",
+        "fix": "Replace 'num' with 'total'"
+      },
+      {
+        "line": 0,
+        "type": "NameError",
+        "description": "Possible typo: 'greet' similar to 'total'",
+        "severity": "high",
+        "fix": "Replace 'greet' with 'total'"
+      }
+    ],
+    "summary": "Analyzed 35 lines with 8 issues"
+  }
+}
