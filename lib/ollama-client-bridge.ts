@@ -84,7 +84,7 @@ export async function* streamFromLocalOllama(
             yield content;
           }
         } catch (e) {
-          console.error("Error parsing Local AI SSE chunk:", e);
+          console.warn("Error parsing Local AI SSE chunk:", e);
         }
       }
     }

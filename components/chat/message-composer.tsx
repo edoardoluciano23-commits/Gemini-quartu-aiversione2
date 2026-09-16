@@ -139,7 +139,7 @@ export function MessageComposer({ isStreaming, disabled, onSend, onStop }: Messa
             <span className="hidden xs:inline">Elaborazione locale attiva</span>
             <span className="xs:hidden">Locale</span>
             <span className="opacity-50">•</span>
-            <span>Tri-Engine Failover</span>
+            <span>LM Studio / Ollama / WebGPU</span>
           </span>
           {value.length > 0 && (
             <span className="font-mono text-[10px] opacity-70">

@@ -61,7 +61,7 @@ export function MessageList({
             Ciao, sono <span className="brand-gradient">Quartu AI</span>
           </h2>
           <p className="mt-2.5 text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
-            Motore locale <span className="font-semibold text-foreground">Tri-Engine</span> a zero latenza. I tuoi prompt e i tuoi dati non lasciano mai il tuo dispositivo.
+            Motore locale <span className="font-semibold text-foreground">Multi-Engine</span> a zero latenza. I tuoi prompt e i tuoi dati non lasciano mai il tuo dispositivo.
           </p>
 
           {/* Badge di stato dell'architettura hardware */}
@@ -76,7 +76,7 @@ export function MessageList({
             </span>
             <span className="glass-pill inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">
               <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
-              Quartu Core
+              Ollama Engine
             </span>
           </div>
         </div>

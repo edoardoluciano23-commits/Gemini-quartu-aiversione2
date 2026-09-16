@@ -520,7 +520,7 @@ function ChatShellContent({ initialConversations }: ChatShellProps) {
               <HardDrive className="h-4 w-4" />
               {modelStatusMap && (
                 <span
-                  className="absolute 1 top-1.5 right-1.5 flex h-2 w-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500"
+                  className="absolute top-1.5 right-1.5 flex h-2 w-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500"
                   title="Modelli gestiti attivi"
                 />
               )}
