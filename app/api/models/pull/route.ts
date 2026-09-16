@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   }
 
   if (!running || lmstudioHost.includes("<tuo-subdomain>")) {
-    return jsonError(503, "Ollama / LM Studio non è in esecuzione o non è raggiungibile.");
+    return jsonError(503, "Connessione server esterno non attiva. Nessun problema: il motore locale integrato di Quartu AI è sempre pronto all'uso senza dipendenze o comandi da terminale.");
   }
 
   try {

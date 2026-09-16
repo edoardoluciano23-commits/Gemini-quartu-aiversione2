@@ -7,6 +7,30 @@ import * as schema from "./schema";
 
 const databasePath = process.env.DATABASE_PATH ?? "./data/chat.db";
 
+function extractIdFromCondition(condition: any): string | null {
+  if (!condition) return null;
+  if (condition.right !== undefined && typeof condition.right === 'string') return condition.right;
+  if (condition.right && condition.right.value !== undefined && typeof condition.right.value === 'string') return condition.right.value;
+  if (condition.value !== undefined && typeof condition.value === 'string') return condition.value;
+  
+  let found: string | null = null;
+  const search = (obj: any) => {
+    if (found) return;
+    if (typeof obj === 'string') {
+      if (obj.length > 5) found = obj; 
+      return;
+    }
+    if (obj && typeof obj === 'object') {
+      for (const k of Object.keys(obj)) {
+        if (k === 'table' || k === 'column' || k === 'name' || k === 'config') continue;
+        search(obj[k]);
+      }
+    }
+  };
+  search(condition);
+  return found;
+}
+
 function createFallbackDb(): any {
   const store = {
     conversations: [] as any[],
@@ -24,7 +48,8 @@ function createFallbackDb(): any {
       let targetTable: any[] = store.conversations;
       let filterFn: ((item: any) => boolean) | null = null;
       let limitNum: number | null = null;
-      let isDescending = true;
+      let isDescending = false;
+      let isOrderBySet = false;
 
       const chain: any = {
         from: (table: any) => {
@@ -32,33 +57,41 @@ function createFallbackDb(): any {
           return chain;
         },
         where: (condition: any) => {
-          if (condition && condition.val !== undefined && condition.id !== undefined) {
-            filterFn = (item) => item.id === condition.val || item.conversationId === condition.val;
+          const id = extractIdFromCondition(condition);
+          if (id) {
+            filterFn = (item) => item.id === id || item.conversationId === id;
           }
           return chain;
         },
         orderBy: (...args: any[]) => {
+          isOrderBySet = true;
+          const argsStr = JSON.stringify(args);
+          if (argsStr.includes('"desc"') || argsStr.includes('desc')) {
+            isDescending = true;
+          }
           return chain;
         },
         limit: (n: number) => {
           limitNum = n;
           return chain;
         },
-        all: () => chain.then((res: any) => res),
-        then: (resolve: (val: any) => void) => {
+        all: () => {
           let result = [...targetTable];
           if (filterFn) result = result.filter(filterFn);
-          result.sort((a, b) => {
-            const tA = (a.updatedAt ?? a.createdAt)?.getTime?.() ?? a.createdAt ?? 0;
-            const tB = (b.updatedAt ?? b.createdAt)?.getTime?.() ?? b.createdAt ?? 0;
-            return isDescending ? tB - tA : tA - tB;
-          });
+          if (isOrderBySet) {
+             result.sort((a, b) => {
+               const tA = (a.updatedAt ?? a.createdAt)?.getTime?.() ?? (typeof a.createdAt === 'number' ? a.createdAt : 0);
+               const tB = (b.updatedAt ?? b.createdAt)?.getTime?.() ?? (typeof b.createdAt === 'number' ? b.createdAt : 0);
+               return isDescending ? tB - tA : tA - tB;
+             });
+          }
           if (limitNum !== null) result = result.slice(0, limitNum);
           if (fields && Object.keys(fields).length === 1 && fields.id) {
             result = result.map((r) => ({ id: r.id }));
           }
-          resolve(result);
+          return result;
         },
+        then: (resolve: (val: any) => void) => resolve(chain.all()),
       };
       return chain;
     },
@@ -67,13 +100,18 @@ function createFallbackDb(): any {
       return {
         values: (val: any | any[]) => {
           const items = Array.isArray(val) ? val : [val];
-          for (const item of items) {
-            targetTable.push(item);
-          }
-          return {
-            run: () => {},
-            then: (resolve: (val: any) => void) => resolve(items),
+          const chain: any = {
+            run: () => {
+              for (const item of items) targetTable.push(item);
+            },
+            all: () => {
+              chain.run();
+              return items;
+            },
+            then: (resolve: (val: any) => void) => resolve(chain.all()),
+            returning: () => chain,
           };
+          return chain;
         },
       };
     },
@@ -88,29 +126,24 @@ function createFallbackDb(): any {
           return chain;
         },
         where: (condition: any) => {
-          if (condition && condition.val !== undefined) {
-            filterId = condition.val;
-          }
+          filterId = extractIdFromCondition(condition);
           return chain;
         },
         returning: () => chain,
-        run: () => {
-          if (filterId) {
-            const item = targetTable.find((i) => i.id === filterId);
-            if (item) Object.assign(item, updateData);
-          }
-        },
-        then: (resolve: (val: any) => void) => {
+        all: () => {
           const updated: any[] = [];
           if (filterId) {
-            const item = targetTable.find((i) => i.id === filterId);
-            if (item) {
-              Object.assign(item, updateData);
-              updated.push(item);
+            for (const item of targetTable) {
+              if (item.id === filterId || item.conversationId === filterId) {
+                Object.assign(item, updateData);
+                updated.push(item);
+              }
             }
           }
-          resolve(updated);
+          return updated;
         },
+        run: () => { chain.all(); },
+        then: (resolve: (val: any) => void) => resolve(chain.all()),
       };
       return chain;
     },
@@ -120,36 +153,24 @@ function createFallbackDb(): any {
 
       const chain: any = {
         where: (condition: any) => {
-          if (condition && condition.val !== undefined) {
-            filterId = condition.val;
-          }
+          filterId = extractIdFromCondition(condition);
           return chain;
         },
         returning: () => chain,
         all: () => {
           const deleted: any[] = [];
           if (filterId) {
-            const idx = targetTable.findIndex((i) => i.id === filterId || i.conversationId === filterId);
-            if (idx !== -1) {
-              deleted.push(targetTable[idx]);
-              targetTable.splice(idx, 1);
-            }
-          }
-          return deleted;
-        },
-        run: () => {
-          if (filterId) {
             for (let i = targetTable.length - 1; i >= 0; i--) {
               if (targetTable[i].id === filterId || targetTable[i].conversationId === filterId) {
+                deleted.push(targetTable[i]);
                 targetTable.splice(i, 1);
               }
             }
           }
+          return deleted.reverse();
         },
-        then: (resolve: (val: any) => void) => {
-          const deleted = chain.all();
-          resolve(deleted);
-        },
+        run: () => { chain.all(); },
+        then: (resolve: (val: any) => void) => resolve(chain.all()),
       };
       return chain;
     },
@@ -196,8 +217,8 @@ export function serializeConversation(row: typeof schema.conversations.$inferSel
   return {
     id: row.id,
     title: row.title,
-    createdAt: row.createdAt.getTime(),
-    updatedAt: row.updatedAt.getTime(),
+    createdAt: row.createdAt instanceof Date ? row.createdAt.getTime() : new Date(row.createdAt).getTime(),
+    updatedAt: row.updatedAt instanceof Date ? row.updatedAt.getTime() : new Date(row.updatedAt).getTime(),
   };
 }
 
@@ -213,6 +234,6 @@ export function serializeMessage(row: typeof schema.messages.$inferSelect): {
     role: row.role,
     content: row.content,
     status: row.status,
-    createdAt: row.createdAt.getTime(),
+    createdAt: row.createdAt instanceof Date ? row.createdAt.getTime() : new Date(row.createdAt).getTime(),
   };
 }
